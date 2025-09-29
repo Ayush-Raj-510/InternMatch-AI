@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InternMatch AI</title>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <script>
+      // Early global handlers to avoid third-party network errors (FullStory/Clerk) from crashing the app
+      window.addEventListener('unhandledrejection', function(e) {
+        try {
+          const reason = e && (e.reason || '');
+          const msg = String((reason && (reason.message || reason)) || '').toLowerCase();
+          if (msg.includes('failed to fetch') || msg.includes('clerk') || msg.includes('fullstory') || msg.includes('networkerror')) {
+            console.warn('Suppressed unhandledrejection:', msg, reason);
+            e.preventDefault && e.preventDefault();
+          }
+        } catch (err) {
+          console.warn('unhandledrejection handler error', err);
+        }
+      });
+      window.addEventListener('error', function(ev) {
+        try {
+          const msg = String((ev && (ev.message || '')) || '').toLowerCase();
+          if (msg.includes('failed to fetch') || msg.includes('clerk') || msg.includes('fullstory') || msg.includes('networkerror')) {
+            console.warn('Suppressed window.error:', msg);
+            ev.preventDefault && ev.preventDefault();
+          }
+        } catch (err) {
+          console.warn('error handler failure', err);
+        }
+      });
+    </script>
+
+    <script type="module" src="/client/App.tsx"></script>
+  </body>
+</html>
